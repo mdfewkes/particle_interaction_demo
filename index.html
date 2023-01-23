@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<canvas id="life" width="800" height="800" style="display:inline-block;float:left;"></canvas>
+<div style="display:inline-block;float:left;align:right;">
+	
+	<p><input type="range" min="0.3" max="0.95" value="0.7" step="0.05" class="slider" oninput="fluidity = this.value;">Fluidity
+	
+	<p><input type="range" min="-0.5" max="0.5" value="-0.01" step="0.01" class="slider" oninput="rr = -this.value;">Red => Red
+	
+	<p><input type="range" min="-0.5" max="0.5" value="0.2" step="0.01" class="slider" oninput="ry = -this.value;">Red => Yellow
+	
+	<p><input type="range" min="-0.5" max="0.5" value="0.2" step="0.01" class="slider" oninput="rb = -this.value;">Red => Blue
+	
+	<p><input type="range" min="-0.5" max="0.5" value="-0.4" step="0.01" class="slider" oninput="rg = -this.value;">Red => Green
+	
+	<p><input type="range" min="-0.5" max="0.5" value="0.05" step="0.01" class="slider" oninput="yr = -this.value;">Yellow => Red
+	
+	<p><input type="range" min="-0.5" max="0.5" value="-0.1" step="0.01" class="slider" oninput="yy = -this.value;">Yellow => Yellow
+	
+	<p><input type="range" min="-0.5" max="0.5" value="0.2" step="0.01" class="slider" oninput="yb = -this.value;">Yellow => Blue
+	
+	<p><input type="range" min="-0.5" max="0.5" value="-0.1" step="0.01" class="slider" oninput="yg = -this.value;">Yellow => Green
+	
+	<p><input type="range" min="-0.5" max="0.5" value="-0.01" step="0.01" class="slider" oninput="br = -this.value;">Blue => Red
+	
+	<p><input type="range" min="-0.5" max="0.5" value="-0.01" step="0.01" class="slider" oninput="by = -this.value;">Blue => Yellow
+	
+	<p><input type="range" min="-0.5" max="0.5" value="-0.1" step="0.01" class="slider" oninput="bb = -this.value;">Blue => Blue
+	
+	<p><input type="range" min="-0.5" max="0.5" value="0.1" step="0.01" class="slider" oninput="bg = -this.value;">Blue => Green
+	
+	<p><input type="range" min="-0.5" max="0.5" value="0.3" step="0.01" class="slider" oninput="gr = -this.value;">Green => Red
+	
+	<p><input type="range" min="-0.5" max="0.5" value="0.3" step="0.01" class="slider" oninput="gy = -this.value;">Green => Yellow
+	
+	<p><input type="range" min="-0.5" max="0.5" value="0.3" step="0.01" class="slider" oninput="gb = -this.value;">Green => Blue
+	
+	<p><input type="range" min="-0.5" max="0.5" value="0.1" step="0.01" class="slider" oninput="gg = -this.value;">Green => Green
+</div>
+<script>
+	document.getElementById('life').addEventListener('mousedown', (e)=>{rule(particles, [{x:e.clientX, y:e.clientY}], 100);});
+
+	m = document.getElementById("life").getContext('2d');
+	var width = m.canvas.width;
+	var height = m.canvas.height;
+	var size = 3;
+	var terminalVeocity = 100;
+	var fluidity = 0.7;
+	var wallBounce = 10;
+
+	var rr = 0.01;
+	var ry = -0.2;
+	var rb = -0.2;
+	var rg = 0.4;
+	var yr = -0.05;
+	var yy = 0.1;
+	var yb = -0.2;
+	var yg = 0.1;
+	var br = 0.01;
+	var by = 0.01;
+	var bb = 0.1;
+	var bg = 0.1;
+	var gr = -0.3;
+	var gy = -0.3;
+	var gb = -0.3;
+	var gg = -0.1;
+
+	draw = (x, y, c, w, h) => {
+		m.fillStyle = c;
+		m.fillRect(x, y, w, h);
+	};
+
+	var particles = [];
+	particle = (x, y, c)=> {
+		return {"x":x, "y":y, "velocityX":0, "velocityY":0, "color":c};
+	}
+
+	create = (number, color)=> {
+		var group = [];
+		for (var i = 0; i < number; i++) {
+			group.push(particle(Math.random()*width, Math.random()*height, color));
+			particles.push(group[i]);
+		}
+
+		return group;
+	}
+
+	rule = (particles1, particles2, weight, maxArea = 100, minArea = 0)=> {
+		for (var i = 0; i < particles1.length; i++) {
+			var forceX = 0;
+			var forceY = 0;
+			var a = particles1[i];
+
+			for (var j = 0; j < particles2.length; j++) {
+				var b = particles2[j];
+				var distanceX = a.x - b.x;
+				var distanceY = a.y - b.y;
+				var distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+				if (distance > minArea && distance < maxArea) {
+					var force = weight * 1/(distance - minArea);
+					forceX += (force * distanceX);
+					forceY += (force * distanceY);
+				}
+			}
+
+			a.velocityX = (a.velocityX + forceX) * fluidity;
+			a.velocityY = (a.velocityY + forceY) * fluidity;
+		}
+	}
+
+	red = create(300, "red");
+	yellow = create(70, "yellow");
+	blue = create(100, "cyan");
+	green = create(30, "green");
+
+	update = ()=> {
+
+		rule(red, red, rr);
+		rule(red, yellow, ry);
+		rule(red, blue, rb);
+		rule(red, green, rg);
+		rule(yellow, red, yr);
+		rule(yellow, yellow, yy);
+		rule(yellow, blue, yb);
+		rule(yellow, green, yg);
+		rule(blue, red, br);
+		rule(blue, yellow, by);
+		rule(blue, blue, bb);
+		rule(blue, green, bg);
+		rule(green, red, gr);
+		rule(green, yellow, gy);
+		rule(green, blue, gb);
+		rule(green, green, gg);
+
+		m.clearRect(0, 0, width, height);
+		draw(0, 0, "black", width, height);
+		for (var i = 0; i < particles.length; i++) {
+			//Move particle
+			//No movement faster than terminal velocity. Normalize Velocities faster to terminal
+			var magnitude = Math.sqrt(particles[i].velocityX*particles[i].velocityX + particles[i].velocityY*particles[i].velocityY);
+			if (magnitude > terminalVeocity) {
+				particles[i].velocityX = particles[i].velocityX/magnitude * terminalVeocity;
+				particles[i].velocityY = particles[i].velocityY/magnitude * terminalVeocity;
+			}
+			//Apply velocity
+			particles[i].x += particles[i].velocityX;
+			particles[i].y += particles[i].velocityY;
+			//Boundery check
+			if (particles[i].x < 0) {
+				particles[i].x = 0; 
+				particles[i].velocityX *= -wallBounce; 
+			}
+			if (particles[i].x > width-size) {
+				particles[i].x = width-size; 
+				particles[i].velocityX *= -wallBounce; 
+		}
+			if (particles[i].y < 0) {
+				particles[i].y = 0; 
+				particles[i].velocityY *= -wallBounce; 
+		}
+			if (particles[i].y > height-size) {
+				particles[i].y = height-size; 
+				particles[i].velocityY *= -wallBounce; 
+		}
+
+			//Draw particle
+			draw(particles[i].x, particles[i].y, particles[i].color, size, size);
+		}
+		requestAnimationFrame(update);
+	}
+
+	update();
+
+</script>
+</html>
