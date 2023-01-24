@@ -4,36 +4,28 @@
 	
 	<p><input type="range" min="0.3" max="0.95" value="0.7" step="0.05" class="slider" oninput="fluidity = this.value;">Fluidity
 	
+	<p>~~~~~~~~~~Red
 	<p><input type="range" min="-0.5" max="0.5" value="-0.01" step="0.01" class="slider" oninput="rr = -this.value;">Red => Red
-	
 	<p><input type="range" min="-0.5" max="0.5" value="0.2" step="0.01" class="slider" oninput="ry = -this.value;">Red => Yellow
-	
 	<p><input type="range" min="-0.5" max="0.5" value="0.2" step="0.01" class="slider" oninput="rb = -this.value;">Red => Blue
-	
 	<p><input type="range" min="-0.5" max="0.5" value="-0.4" step="0.01" class="slider" oninput="rg = -this.value;">Red => Green
 	
+	<p>~~~~~~~~~~Yellow
 	<p><input type="range" min="-0.5" max="0.5" value="0.05" step="0.01" class="slider" oninput="yr = -this.value;">Yellow => Red
-	
 	<p><input type="range" min="-0.5" max="0.5" value="-0.1" step="0.01" class="slider" oninput="yy = -this.value;">Yellow => Yellow
-	
 	<p><input type="range" min="-0.5" max="0.5" value="0.2" step="0.01" class="slider" oninput="yb = -this.value;">Yellow => Blue
-	
 	<p><input type="range" min="-0.5" max="0.5" value="-0.1" step="0.01" class="slider" oninput="yg = -this.value;">Yellow => Green
 	
+	<p>~~~~~~~~~~Blue
 	<p><input type="range" min="-0.5" max="0.5" value="-0.01" step="0.01" class="slider" oninput="br = -this.value;">Blue => Red
-	
 	<p><input type="range" min="-0.5" max="0.5" value="-0.01" step="0.01" class="slider" oninput="by = -this.value;">Blue => Yellow
-	
 	<p><input type="range" min="-0.5" max="0.5" value="-0.1" step="0.01" class="slider" oninput="bb = -this.value;">Blue => Blue
-	
 	<p><input type="range" min="-0.5" max="0.5" value="0.1" step="0.01" class="slider" oninput="bg = -this.value;">Blue => Green
 	
+	<p>~~~~~~~~~~Green
 	<p><input type="range" min="-0.5" max="0.5" value="0.3" step="0.01" class="slider" oninput="gr = -this.value;">Green => Red
-	
 	<p><input type="range" min="-0.5" max="0.5" value="0.3" step="0.01" class="slider" oninput="gy = -this.value;">Green => Yellow
-	
 	<p><input type="range" min="-0.5" max="0.5" value="0.3" step="0.01" class="slider" oninput="gb = -this.value;">Green => Blue
-	
 	<p><input type="range" min="-0.5" max="0.5" value="0.1" step="0.01" class="slider" oninput="gg = -this.value;">Green => Green
 </div>
 <script>
@@ -45,7 +37,7 @@
 	var size = 3;
 	var terminalVeocity = 100;
 	var fluidity = 0.7;
-	var wallBounce = 10;
+	var wallBounce = 0.2;
 
 	var rr = 0.01;
 	var ry = -0.2;
@@ -112,6 +104,15 @@
 	blue = create(100, "cyan");
 	green = create(30, "green");
 
+	restart = ()=> {
+		particles.length = 0;
+		
+		red = create(300, "red");
+		yellow = create(70, "yellow");
+		blue = create(100, "cyan");
+		green = create(30, "green");
+	}
+
 	update = ()=> {
 
 		rule(red, red, rr);
@@ -146,20 +147,24 @@
 			particles[i].y += particles[i].velocityY;
 			//Boundery check
 			if (particles[i].x < 0) {
-				particles[i].x = 0; 
-				particles[i].velocityX *= -wallBounce; 
+				// particles[i].x = 0; 
+				// particles[i].velocityX *= -wallBounce; 
+				particles[i].velocityX += wallBounce;
 			}
 			if (particles[i].x > width-size) {
-				particles[i].x = width-size; 
-				particles[i].velocityX *= -wallBounce; 
+				// particles[i].x = width-size; 
+				// particles[i].velocityX *= -wallBounce; 
+				particles[i].velocityX -= wallBounce;
 		}
 			if (particles[i].y < 0) {
-				particles[i].y = 0; 
-				particles[i].velocityY *= -wallBounce; 
+				// particles[i].y = 0; 
+				// particles[i].velocityY *= -wallBounce; 
+				particles[i].velocityY += wallBounce;
 		}
 			if (particles[i].y > height-size) {
-				particles[i].y = height-size; 
-				particles[i].velocityY *= -wallBounce; 
+				// particles[i].y = height-size; 
+				// particles[i].velocityY *= -wallBounce; 
+				particles[i].velocityY -= wallBounce;
 		}
 
 			//Draw particle
